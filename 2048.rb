@@ -2,7 +2,7 @@ require 'json'
 
 class TwoZeroFourEight
 
-  HI_SCORES = File.join(Dir.home, '.hi_scores_2048')
+  HI_SCORES = File.join('/tmp/hi_scores_2048')
 
   COLOR = {0    => [48, 5, 232], 2    => [48, 5, 237],
            4    => [48, 5, 58],  8    => [48, 5, 70],
@@ -20,6 +20,7 @@ class TwoZeroFourEight
     def clear; @value = 0 end
     def spawn; @value = (rand > 0.8 ? 4 : 2) end
     def zero?; @value.zero? end
+    def nonzero?; !zero? end
     def block; ANSI[@value] << ?\s << ANSI[nil, 0] end
     def to_s
       ANSI[0, 1] << ( zero? ? (?\s*4) : ('%4d' % @value) ) << ANSI[nil, 0]
@@ -51,36 +52,38 @@ class TwoZeroFourEight
   end
 
   def compress(tiles)
-    [].tap do |row|
-      tiles.each.with_index do |tile, index|
-        next if tile.zero?
+    tiles = tiles.map.with_index do |tile, index|
+      if ( other = tiles[index.next] ) && (tile.to_i == other.to_i)
+        other.clear
+        @score += tile.to_i
 
-        if ( other = tiles[index.next] ) && (tile.to_i == other.to_i)
-          row.push Tile.new(tile.to_i * 2)
-
-          @score += other.to_i
-          other.clear
-        else
-          row.push tile
-        end
+        Tile.new(tile.to_i * 2)
+      else
+        tile
       end
-
-      row.unshift Tile.new until row.count == 4
     end
+
+    tiles.reject! &:zero?
+
+    tiles.unshift Tile.new until tiles.count == 4
+    tiles
   end
 
-  def game_over?; !@tiles.flatten.any?(&:zero?) || win?  end
+  def game_over?; win? || @overfilled end
   def win?; @tiles.flatten.any? { |t| t.to_i == 2048 } end
 
   def execute(direction)
-    @turn += 1
-    @tiles = case @last = direction
-             when :up    then @tiles.transpose.map { |row| compress(row.reject(&:zero?).reverse).reverse }.transpose
-             when :down  then @tiles.transpose.map { |row| compress(row.reject &:zero?) }.transpose
-             when :left  then @tiles.map { |row| compress(row.reject(&:zero?).reverse).reverse }
-             when :right then @tiles.map { |row| compress(row.reject &:zero?) }
-             end
-    @tiles.flatten.select(&:zero?).sample.spawn
+    unless @last == direction
+      @turn += 1
+      case @last = direction
+      when :up    then @tiles = @tiles.transpose.map! { |row| compress(row.reject(&:zero?).reverse).reverse }.transpose
+      when :down  then @tiles = @tiles.transpose.map! { |row| compress(row.reject &:zero?) }.transpose
+      when :left  then @tiles.map! { |row| compress(row.reject(&:zero?).reverse).reverse }
+      when :right then @tiles.map! { |row| compress(row.reject &:zero?) }
+      end
+
+      tile = @tiles.flatten.select(&:zero?).sample and tile.spawn or @overfilled = true
+    end
   end
 
   def gets
