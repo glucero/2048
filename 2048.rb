@@ -28,8 +28,8 @@ class TwoZeroFourEight
 
   attr_reader :turn, :score
 
-  def border(direction)
-    ( @last == direction ? ANSI[:on] : ANSI[:off] ) << ?\s << ANSI[nil, 0]
+  def border(direction = nil)
+    ( @last == direction ? ANSI[:on] : ANSI[:off] ) << (?\s*2) << ANSI[nil, 0]
   end
 
   def add_border(string)
@@ -38,7 +38,7 @@ class TwoZeroFourEight
 
   def to_s
     ''.tap do |string|
-      string << (border(:up)*34) << ?\n
+      string << border << (border(:up)*16) << border << ?\n
 
       @tiles.each.with_index do |row, index|
         add_border(string) { row.map { |t| t.block*8 }.join }
@@ -46,7 +46,7 @@ class TwoZeroFourEight
         add_border(string) { row.map { |t| t.block*8 }.join }
       end
 
-      string << border(:down)*34
+      string << border << (border(:down)*16) << border << ?\n
     end
   end
 
@@ -111,7 +111,7 @@ class TwoZeroFourEight
   end
 
   def initialize
-    @score = @turn = 0
+    @last = @score = @turn = 0
     @tiles = Array.new(4) { Array.new(4) { Tile.new } }
   end
 
