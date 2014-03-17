@@ -133,11 +133,13 @@ end
 tzfe = TwoZeroFourEight.new
 
 STDIN.reopen('/dev/tty')
+system 'clear'
+puts tzfe
 
 until tzfe.game_over?
+  tzfe.move
   system 'clear'
   puts tzfe
-  tzfe.move
 end
 
 scores = tzfe.hi_scores
