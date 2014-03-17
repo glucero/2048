@@ -11,7 +11,7 @@
 ### quick play
 
 ```bash
-  $ curl -s0Lo- https://raw.github.com/glucero/2048/master/2048.rb | ruby
+  $ curl -s0Lo- http://git.io/M6K_0Q | ruby
 ```
 
 ### instructions
