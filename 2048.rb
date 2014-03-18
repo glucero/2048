@@ -71,6 +71,10 @@ class TwoZeroFourEight
   def game_over?; win? || @overfilled end
   def win?; @tiles.flatten.any? { |t| t.to_i == 2048 } end
 
+  def empty_tile
+    @tiles.flatten.select(&:zero?).sample
+  end
+
   def execute(direction)
     @turn += 1
 
@@ -83,15 +87,13 @@ class TwoZeroFourEight
     when :right then @tiles.map! { |row| compress(row.reject &:zero?) }
     end
 
-    if state.flatten.inject(&:+).zero? || state != @tiles.map { |row| row.map &:to_i }
-      if tile = @tiles.flatten.select(&:zero?).sample
-        tile.spawn
-      else
-        @overfilled = true
-      end
-    else
-      @overfilled = !@tiles.flatten.any?(&:nonzero?)
+    new_state = @tiles.map { |row| row.map &:to_i }
+
+    if state.flatten.inject(&:+).zero? || state != new_state
+      tile = empty_tile and tile.spawn
     end
+
+    @overfilled = @tiles.flatten.all?(&:nonzero?) if state == new_state
   end
 
   def gets
