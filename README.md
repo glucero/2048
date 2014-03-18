@@ -1,5 +1,7 @@
 # 2048
 
+<img src="http://i.imgur.com/v3lMnZ2.png">
+
 ### running the game
 
 ```bash
