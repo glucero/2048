@@ -1,3 +1,4 @@
+require 'pry'
 require 'json'
 
 class TwoZeroFourEight
@@ -64,7 +65,6 @@ class TwoZeroFourEight
     end
 
     tiles.reject! &:zero?
-
     tiles.unshift Tile.new until tiles.count == 4
     tiles
   end
@@ -73,16 +73,25 @@ class TwoZeroFourEight
   def win?; @tiles.flatten.any? { |t| t.to_i == 2048 } end
 
   def execute(direction)
-    unless @last == direction
-      @turn += 1
-      case @last = direction
-      when :up    then @tiles = @tiles.transpose.map! { |row| compress(row.reject(&:zero?).reverse).reverse }.transpose
-      when :down  then @tiles = @tiles.transpose.map! { |row| compress(row.reject &:zero?) }.transpose
-      when :left  then @tiles.map! { |row| compress(row.reject(&:zero?).reverse).reverse }
-      when :right then @tiles.map! { |row| compress(row.reject &:zero?) }
-      end
+    @turn += 1
 
-      tile = @tiles.flatten.select(&:zero?).sample and tile.spawn or @overfilled = true
+    state = @tiles.map { |row| row.map &:to_i }
+
+    case @last = direction
+    when :up    then @tiles = @tiles.transpose.map { |row| compress(row.reject(&:zero?).reverse).reverse }.transpose
+    when :down  then @tiles = @tiles.transpose.map { |row| compress(row.reject &:zero?) }.transpose
+    when :left  then @tiles.map! { |row| compress(row.reject(&:zero?).reverse).reverse }
+    when :right then @tiles.map! { |row| compress(row.reject &:zero?) }
+    end
+
+    if state.flatten.inject(&:+).zero? || state != @tiles.map { |row| row.map &:to_i }
+      if tile = @tiles.flatten.select(&:zero?).sample
+        tile.spawn
+      else
+        @overfilled = true
+      end
+    else
+      @overfilled = true unless @tiles.flatten.any?(&:zero?)
     end
   end
 
