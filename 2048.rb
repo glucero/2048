@@ -1,4 +1,3 @@
-require 'pry'
 require 'json'
 
 class TwoZeroFourEight
@@ -91,7 +90,7 @@ class TwoZeroFourEight
         @overfilled = true
       end
     else
-      @overfilled = true unless @tiles.flatten.any?(&:zero?)
+      @overfilled = !@tiles.flatten.any?(&:nonzero?)
     end
   end
 
