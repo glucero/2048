@@ -2,7 +2,13 @@
 
 <img src="http://i.imgur.com/5EACxeC.png">
 
-### running the game
+### quick play
+
+```bash
+  $ curl -s0Lo- http://git.io/M6K_0Q | ruby
+```
+
+### running the game locally
 
 ```bash
   $ git clone https://github.com/glucero/2048
@@ -10,19 +16,12 @@
   $ rake start
 ```
 
-### quick play
-
-```bash
-  $ curl -s0Lo- http://git.io/M6K_0Q | ruby
-```
 
 ### instructions
 
 Use the arrow keys to shift the tiles up, down, left and right and try to create a 2048 tile.
 
-### license
-
-MIT License
+### mit license
 
 Copyright ©2014 Gino Lucero
 
