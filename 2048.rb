@@ -18,7 +18,7 @@ class TwoZeroFourEight
     def initialize(value = 0) @value = value end
     def to_i;  @value end
     def clear; @value = 0 end
-    def spawn; @value = (rand > 0.8 ? 4 : 2) end
+    def spawn; @value = (rand > 0.9 ? 4 : 2) end
     def zero?; @value.zero? end
     def nonzero?; !zero? end
     def block; ANSI[@value] << ?\s << ANSI[nil, 0] end
@@ -28,6 +28,10 @@ class TwoZeroFourEight
   end
 
   attr_reader :turn, :score
+
+  def level
+    @tiles.flatten.map(&:to_i).max
+  end
 
   def border(direction = nil)
     ( @last == direction ? ANSI[:on] : ANSI[:off] ) << (?\s*2) << ANSI[nil, 0]
@@ -167,6 +171,8 @@ else
 end
 puts "#{scores['wins']}:#{scores['games'] - scores['wins']})"
 
+scores['hi_level'] = tzfe.level if tzfe.level> scores['hi_level']
+puts "Level: #{tzfe.level} (best: #{scores['hi_level']})"
 scores['hi_turns'] = tzfe.turn if tzfe.turn > scores['hi_turns']
 puts "Turn:  #{tzfe.turn} (best: #{scores['hi_turns']})"
 scores['hi_score'] = tzfe.score if tzfe.score > scores['hi_score']
