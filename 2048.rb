@@ -18,7 +18,7 @@ class TwoZeroFourEight
     def initialize(value = 0) @value = value end
     def to_i;  @value end
     def clear; @value = 0 end
-    def spawn; @value = (rand > 0.9 ? 4 : 2) end
+    def spawn; @value = (rand > 0.8 ? 4 : 2) end
     def zero?; @value.zero? end
     def nonzero?; !zero? end
     def block; ANSI[@value] << ?\s << ANSI[nil, 0] end
