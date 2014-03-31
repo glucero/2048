@@ -23,7 +23,7 @@ class TwoZeroFourEight
     def nonzero?; !zero? end
     def block; ANSI[@value] << ?\s << ANSI[nil, 0] end
     def to_s
-      ANSI[0, 1] << ( zero? ? (?\s*4) : ('%4d' % @value) ) << ANSI[nil, 0]
+      ANSI[0, 1] << ( zero? ? (?\s*4) : ('%d' % @value).center(4) ) << ANSI[nil, 0]
     end
   end
 
@@ -179,4 +179,3 @@ scores['hi_score'] = tzfe.score if tzfe.score > scores['hi_score']
 puts "Score: #{tzfe.score} (best: #{scores['hi_score']})"
 
 tzfe.write scores
-
